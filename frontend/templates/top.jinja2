@@ -1,0 +1,13 @@
+{% extends "base.jinja2" %}
+{% block title %}Scry - Top Players{% endblock %}
+{% block header %}Top Players{% endblock %}
+{% block content %}
+    <div id="search-results">
+        {% for result in search_results %}
+            <div class="search-result">
+                <a class="user-link" href="/show/{{ result.player_id|urlencode }}">{{ result.display_name }}</a>
+                <span class="uid">{{ result.elo }}</span>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -78,6 +78,14 @@ def show_user(userid: str):
     return flask.render_template("show.jinja2", player=player, relative_elo=relative_elo, games=player.get_games(session))
 
 
+@app.route('/top')
+def show_top():
+    session = get_db()
+    query = session.query(Player).order_by(Player.elo.desc()).limit(100)
+    results = [player for player in query.all()]
+    return flask.render_template("top.jinja2", search_results=results)
+
+
 if __name__ == '__main__':
     extra_dirs = ['templates', 'static']
     extra_files = extra_dirs[:]
