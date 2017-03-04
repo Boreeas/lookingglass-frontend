@@ -1,0 +1,2 @@
+graft frontend/static
+graft frontend/templates
