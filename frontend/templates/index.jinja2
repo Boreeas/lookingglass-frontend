@@ -1,0 +1,15 @@
+{% extends "base.jinja2" %}
+{% block title %}Scry{% endblock %}
+{% block header %}Search for Players{% endblock %}
+{% block body %}
+    {{ super() }}
+    <div id="background-image"></div>
+{% endblock %}
+{% block content %}
+    <div id="search">
+        <form id="search-form" action="/search">
+            <input id="search-bar" type="search" name="query" placeholder="Name or Player Id">
+            <input type="submit" value="&#x1F50D;" hidden>
+        </form>
+    </div>
+{% endblock %}

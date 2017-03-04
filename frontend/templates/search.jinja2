@@ -1,0 +1,17 @@
+{% extends "base.jinja2" %}
+{% block title %}Scry - Search{% endblock %}
+{% block header %}Search Results{% if query %} for {{ query }}{% endif %}{% endblock %}
+{% block content %}
+    {% if query %}
+        <div id="search-results">
+            {% for result in search_results %}
+                <div class="search-result">
+                    <a class="user-link" href="/show/{{ result.player_id|urlencode }}">{{ result.display_name }}</a>
+                    <span class="uid">{{ result.player_id }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div id="search-results">Please provide a query</div>
+    {% endif %}
+{% endblock %}

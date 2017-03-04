@@ -1,0 +1,33 @@
+{% extends "base.jinja2" %}
+{% block title %}Scry - Matchhistory{% endblock %}
+{% block header %}{{ player.display_name }}{% endblock %}
+{% block after_header %}
+    <div id="elo">
+        <div id="elo-content">Player Rating: {{ player.elo }} (Top {{ relative_elo }}%)</div>
+    </div>
+{% endblock %}
+{% block content %}
+    <div id="match-history">
+        {% for game in games %}
+            <div class="match {% if game.end_result == "Win" or game.end_result == "Coop Win" %}win{% elif game.end_result == "Loss" or game.end_result == "Coop Loss" %}loss{% endif %}">
+                <div class="match-info">
+                    <div class="match-info-specific">
+                        <span class="match-result">{{ game.end_result }}</span>
+                        {% if game.end_result.startswith("Coop") %}with{% else %}against{% endif %}
+                        <span class="match-opponent">
+                            <a class="user-link" href="/show/{{ game.opponent.player_id|urlencode }}">
+                                {{ game.opponent.display_name }}
+                            </a>
+                        </span>
+                    </div>
+                    <div class="match-timestamp">{{ game.start_date.strftime('%d %b %Y %X') }}</div>
+                </div>
+                <div class="match-elo {% if game.end_result.startswith("Coop") or game.elo_value %}rated{% endif %}">
+                    <div class="match-elo-content">
+                        {% if game.elo_value %}{{ "{:+d}".format(game.elo_value) }}{% elif game.end_result.startswith("Coop")%}+0{% else %}Rating Pending{% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
