@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
+from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Boolean
 from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, Session
@@ -23,6 +23,7 @@ class Player(Base):
     normalized_display_name = Column(String, nullable=False)
     player_id = Column(String, primary_key=True)
     elo = Column(Integer, default=0, nullable=False)
+    visibility_restricted = Column(Boolean)
 
     __games__ = relationship("PlayerPlayedGame", back_populates="player")
 
@@ -51,6 +52,14 @@ class Player(Base):
                 opponent = players[1]
             else:
                 opponent = players[0]
+
+            if opponent.visibility_restricted:
+                opponent = Player()
+                opponent.display_name = "Unknown Weaver"
+                opponent.player_id = '#deleted#'
+                opponent.elo = 0
+                opponent.normalized_display_name = 'unknown weaver'
+
             result.append(FullGameInfo(game.start_date, participation.end_result, participation.elo_diff, opponent))
         return result
 

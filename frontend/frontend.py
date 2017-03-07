@@ -53,6 +53,7 @@ def search():
     search_results = [player for player in db_query.all()]
     if not search_results:
         db_query = session.query(Player) \
+            .filter(Player.visibility_restricted == False) \
             .filter(func.similarity(Player.normalized_display_name, norm_query) > 0.2) \
             .order_by(func.similarity(Player.normalized_display_name, norm_query).desc())
         search_results = [player for player in db_query.all()]
@@ -65,7 +66,10 @@ def search():
 @app.route('/show/<userid>')
 def show_user(userid: str):
     session = get_db()
-    user = session.query(Player).filter(Player.player_id == userid.lower())
+    user = session.query(Player)\
+        .filter(Player.player_id == userid.lower())\
+        .filter(Player.visibility_restricted == False)
+
     if not len(user.all()) or userid == '#deleted#':
         return flask.render_template("nosuchuser.jinja2", display_name="Unknown Weaver")
     player = user[0]
@@ -81,7 +85,7 @@ def show_user(userid: str):
 @app.route('/top')
 def show_top():
     session = get_db()
-    query = session.query(Player).order_by(Player.elo.desc()).limit(100)
+    query = session.query(Player).filter(Player.visibility_restricted == False).order_by(Player.elo.desc()).limit(100)
     results = [player for player in query.all()]
     return flask.render_template("top.jinja2", search_results=results)
 

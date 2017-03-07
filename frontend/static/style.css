@@ -173,16 +173,20 @@ body {
     padding-top: 5px;
     margin-top: -20px;
 
+    color: lightgray;
+
     display: flex;
-    flex-flow: column;
+    flex-flow: row;
     justify-content: center;
     align-content: center;
 }
 
 #more a {
-    color: white;
+    color: lightgray;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
-#more a:visited {
-    color: lightgray;
+.more-link-divider {
+    font-size: 10px;
 }
