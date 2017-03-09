@@ -89,6 +89,10 @@ def show_top():
     results = [player for player in query.all()]
     return flask.render_template("top.jinja2", search_results=results)
 
+@app.route('/unlist')
+def hide_player():
+    return flask.render_template("hideme.jinja2")
+
 
 if __name__ == '__main__':
     extra_dirs = ['templates', 'static']
