@@ -1,6 +1,6 @@
 {% extends "base.jinja2" %}
 {% block title %}Scry - Matchhistory{% endblock %}
-{% block header %}{{ player.display_name }}{% endblock %}
+{% block header %}{{ player.display_name|e }}{% endblock %}
 {% block after_header %}
     <div id="elo">
         <div id="elo-content">Player Rating: {{ player.elo }} (Top {{ relative_elo }}%)</div>
@@ -16,7 +16,7 @@
                         {% if game.end_result.startswith("Coop") %}with{% else %}against{% endif %}
                         <span class="match-opponent">
                             <a class="user-link" href="/show/{{ game.opponent.player_id|urlencode }}">
-                                {{ game.opponent.display_name }}
+                                {{ game.opponent.display_name|e }}
                             </a>
                         </span>
                     </div>

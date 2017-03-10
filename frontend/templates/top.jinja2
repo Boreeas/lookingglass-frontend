@@ -5,7 +5,7 @@
     <div id="search-results">
         {% for result in search_results %}
             <div class="search-result">
-                <a class="user-link" href="/show/{{ result.player_id|urlencode }}">{{ result.display_name }}</a>
+                <a class="user-link" href="/show/{{ result.player_id|urlencode }}">{{ result.display_name|e }}</a>
                 <span class="uid">{{ result.elo }}</span>
             </div>
         {% endfor %}
