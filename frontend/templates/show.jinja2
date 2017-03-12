@@ -24,7 +24,9 @@
                 </div>
                 <div class="match-elo {% if game.end_result.startswith("Coop") or game.elo_value %}rated{% endif %}">
                     <div class="match-elo-content">
-                        {% if game.elo_value %}{{ "{:+d}".format(game.elo_value) }}{% elif game.end_result.startswith("Coop")%}+0{% else %}Rating Pending{% endif %}
+                        {% if game.elo_value %}
+                            {{ "{:+d}".format(game.elo_value) }}{% elif game.end_result.startswith("Coop") %}
+                            +0{% else %}Rating Pending{% endif %}
                     </div>
                 </div>
             </div>

@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        {% block head %}
-            <link rel="stylesheet" href="/static/style.css"/>
-            <meta charset="UTF-8"/>
-            <title>{% block title %}{% endblock %}</title>
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}
-        <div id="header">
-            <div id="title">{% block header %}{% endblock %}</div>
-        </div>
-        {% block after_header %} {% endblock %}
-        <div id="content">{% block content %}{% endblock %}</div>
-        {% endblock %}
-    </body>
+<head>
+    {% block head %}
+        <link rel="stylesheet" href="/static/style.css"/>
+        <meta charset="UTF-8"/>
+        <title>{% block title %}{% endblock %}</title>
+    {% endblock %}
+</head>
+<body>
+{% block body %}
+    <a href="/"><img id="logo" src="/static/logo.png"/></a>
+    <div id="header">
+        <div id="title">{% block header %}{% endblock %}</div>
+    </div>
+    {% block after_header %} {% endblock %}
+    <div id="content">{% block content %}{% endblock %}</div>
+    <div id="footer">
+        <div id="attribution">Logo by <a href="http://nicholaskole.tumblr.com/">Nicholas Kole</a> &#9679; Background by <a href="http://www.epicloot.net/">Brandon Liao</a></div>
+    </div>
+{% endblock %}
+</body>
 </html>

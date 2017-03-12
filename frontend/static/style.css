@@ -21,6 +21,14 @@ body {
     background-size: cover;
 }
 
+#logo {
+    position: absolute;
+    top: 4px;
+    left: 16px;
+    height: 56px;
+    transform: rotate(-30deg);
+}
+
 #header {
     text-align: center;
     font-weight: bold;
@@ -46,6 +54,22 @@ body {
     align-self: center;
     flex: 1 1 auto;
 }
+
+#footer {
+    text-align: center;
+    flex: 0 0 auto;
+
+    font-size: 14px;
+    color: #d3d3d3;
+
+    border-top: 1px solid #808080;
+    background-color: #1c668e;
+}
+
+#footer a {
+    color: #d3d3d3;
+}
+
 
 #search {
     height: 100%;
