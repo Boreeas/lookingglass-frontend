@@ -108,17 +108,37 @@ body {
     float: right;
 }
 
-#elo {
+#player-info {
     background-color: #222222;
     color: #dfdfdf;
     border-bottom: 1px solid #d3d3d3;
     width: 100%;
     align-content: center;
+
+    /* title alignment */
+    display: flex;
+    flex-flow: row;
+    align-items: center;
     justify-content: center;
 }
 
-#elo-content {
-    text-align: center;
+#elo {
+    flex: 1 1 auto;
+    text-align: right;
+}
+
+#last-updated {
+    flex: 1 1 auto;
+}
+
+#update-triggered {
+    font-size: smaller;
+}
+
+#divider {
+    font-size: smaller;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .match {

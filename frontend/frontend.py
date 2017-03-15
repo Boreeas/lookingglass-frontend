@@ -6,6 +6,7 @@ from db import Player
 from flask import Flask, g, request
 from sqlalchemy import or_, func
 from sqlalchemy.orm import Session, sessionmaker
+from datetime import datetime, timedelta, timezone
 
 app = Flask(__name__)
 app.config.from_json("config.json")
@@ -66,8 +67,8 @@ def search():
 @app.route('/show/<userid>')
 def show_user(userid: str):
     session = get_db()
-    user = session.query(Player)\
-        .filter(Player.player_id == userid.lower())\
+    user = session.query(Player) \
+        .filter(Player.player_id == userid.lower()) \
         .filter(Player.visibility_restricted == False)
 
     if not len(user.all()) or userid == '#deleted#':
@@ -79,7 +80,26 @@ def show_user(userid: str):
     )  # type: sqlalchemy.engine.ResultProxy
     relative_elo = 100 * result_proxy.fetchone()[0]
     relative_elo = int(100 * relative_elo) / 100.0
-    return flask.render_template("show.jinja2", player=player, relative_elo=relative_elo, games=player.get_games(session))
+
+    games = player.get_games(session)
+    last_game_date = None
+    for game in games:
+        if not last_game_date or game.start_date > last_game_date:
+            last_game_date = game.start_date
+
+    update_triggered = False
+    last_game_cutoff = datetime.now(timezone.utc) - timedelta(hours=12)
+    last_checked_cutoff = datetime.now(timezone.utc) - timedelta(hours=1)
+    if (not last_game_date or last_game_date <= last_game_cutoff) and player.last_checked <= last_checked_cutoff:
+        print("Last game date:", last_game_date, "(Cutoff:", datetime.now(timezone.utc) - timedelta(hours=12), ")")
+        update_triggered = True
+        session.execute(
+            "UPDATE Players SET trigger_update = TRUE WHERE player_id = :id",
+            {'id': player.player_id}
+        )
+        session.commit()
+
+    return flask.render_template("show.jinja2", player=player, relative_elo=relative_elo, games=games, update_triggered=update_triggered)
 
 
 @app.route('/top')
@@ -88,6 +108,7 @@ def show_top():
     query = session.query(Player).filter(Player.visibility_restricted == False).order_by(Player.elo.desc()).limit(100)
     results = [player for player in query.all()]
     return flask.render_template("top.jinja2", search_results=results)
+
 
 @app.route('/unlist')
 def hide_player():

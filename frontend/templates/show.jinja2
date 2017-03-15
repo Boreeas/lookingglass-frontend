@@ -2,8 +2,14 @@
 {% block title %}Scry - Matchhistory{% endblock %}
 {% block header %}{{ player.display_name|e }}{% endblock %}
 {% block after_header %}
-    <div id="elo">
-        <div id="elo-content">Player Rating: {{ player.elo }} (Top {{ relative_elo }}%)</div>
+    <div id="player-info">
+        <span id="elo">Player Rating: {{ player.elo }} (Top {{ relative_elo }}%)</span>
+        <span id="divider">&#9679;</span>
+        <span id="last-updated">Updated: {{ player.last_checked.strftime('%d %b %Y %H:%M') }}
+        {% if update_triggered %}
+            <span id="update-triggered">(Update queued)</span>
+        {% endif %}
+        </span>
     </div>
 {% endblock %}
 {% block content %}

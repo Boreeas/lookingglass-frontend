@@ -23,7 +23,9 @@ class Player(Base):
     normalized_display_name = Column(String, nullable=False)
     player_id = Column(String, primary_key=True)
     elo = Column(Integer, default=0, nullable=False)
+    last_checked = Column(DateTime(timezone=True), nullable=False)
     visibility_restricted = Column(Boolean)
+    trigger_update = Column(Boolean)
 
     __games__ = relationship("PlayerPlayedGame", back_populates="player")
 
