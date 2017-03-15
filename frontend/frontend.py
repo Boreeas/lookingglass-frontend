@@ -7,6 +7,7 @@ from flask import Flask, g, request
 from sqlalchemy import or_, func
 from sqlalchemy.orm import Session, sessionmaker
 from datetime import datetime, timedelta, timezone
+from flask_oauthlib.client import OAuth
 
 app = Flask(__name__)
 app.config.from_json("config.json")
@@ -16,6 +17,16 @@ engine = sqlalchemy.create_engine("postgresql://{username}:{password}@localhost/
     password=app.config["DB_PASS"],
     dbname=app.config["DB_NAME"]
 ))  # type: sqlalchemy.engine.base.Engine
+
+oauth = OAuth()
+shardbound = oauth.remote_app('shardbound',
+                              base_url='https://st-george.spiritwalkgames.com/',
+                              request_token_url=None,
+                              access_token_url='oauth/token',
+                              authorize_url='oauth/authorize',
+                              consumer_key=app.config["OAUTH_ID"],
+                              consumer_secret=app.config["OAUTH_SECRET"],
+                              request_token_params={'scope': 'public'})
 
 
 def connect_db() -> sqlalchemy.orm.Session:
@@ -112,7 +123,27 @@ def show_top():
 
 @app.route('/unlist')
 def hide_player():
-    return flask.render_template("hideme.jinja2")
+    return shardbound.authorize(callback='https://scry.boreeas.net/unlist/authorized')
+
+
+# Do not change! URL registered remotely at Spiritwalk Games
+@app.route('/unlist/authorized')
+def hide_player_authorized():
+    resp = shardbound.authorized_response()
+    if resp is None:
+        flask.flash('You denied the authorization request. This is required to verify your id.', 'error')
+        return flask.redirect('/')
+
+    player_id = resp['user_id']
+    session = get_db()
+    session.execute("UPDATE Players SET visibility_restricted = TRUE WHERE player_id = :player_id", {"player_id": player_id})
+
+    flask.flash('You have been removed from the site.', 'info')
+    revoke_resp = shardbound.get('oauth/revoke')
+    if revoke_resp.status != 200:
+        print("Something went wrong while revoking the access token", revoke_resp)
+
+    return flask.redirect('/')
 
 
 if __name__ == '__main__':

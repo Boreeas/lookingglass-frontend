@@ -3,5 +3,7 @@
   "DB_USER": "changeme",
   "DB_PASS": "changeme",
   "SECRET_KEY": "changeme",
-  "DEBUG": false
+  "DEBUG": false,
+  "OAUTH_ID": "changeme",
+  "OAUTH_SECRET": "changeme"
 }
