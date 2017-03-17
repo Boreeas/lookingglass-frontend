@@ -6,5 +6,5 @@ Scripts
 pip-selfcheck.json
 pyvenv.cfg
 __pycache__
-logo.xcf
+*.xcf
 logo-precut.jpg
