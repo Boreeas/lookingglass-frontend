@@ -7,7 +7,7 @@ from flask import Flask, g, request
 from sqlalchemy import or_, func
 from sqlalchemy.orm import Session, sessionmaker
 from datetime import datetime, timedelta, timezone
-from flask_oauthlib.client import OAuth
+from flask_oauthlib.client import OAuth, OAuthException
 
 app = Flask(__name__)
 app.config.from_json("config.json")
@@ -27,6 +27,11 @@ shardbound = oauth.remote_app('shardbound',
                               consumer_key=app.config["OAUTH_ID"],
                               consumer_secret=app.config["OAUTH_SECRET"],
                               request_token_params={'scope': 'public'})
+
+
+@shardbound.tokengetter
+def get_shardbound_oauth_token():
+    return flask.session.get('shardbound_token')
 
 
 def connect_db() -> sqlalchemy.orm.Session:
@@ -129,19 +134,42 @@ def hide_player():
 # Do not change! URL registered remotely at Spiritwalk Games
 @app.route('/unlist/authorized')
 def hide_player_authorized():
-    resp = shardbound.authorized_response()
-    if resp is None:
-        flask.flash('You denied the authorization request. This is required to verify your id.', 'error')
+    try:
+        resp = shardbound.authorized_response()
+        if resp is None:
+            flask.flash('You denied the authorization request. This is required to verify your id.', 'error')
+            return flask.redirect('/')
+    except OAuthException as ex:
+        if 'error' in ex.data:
+            error_spec = " (Error code: {})".format(ex.data['error'])
+        else:
+            error_spec = ''
+        flask.flash('Something went wrong, please try again{}'.format(error_spec), 'error')
         return flask.redirect('/')
+
+    print(resp)
+    flask.session['shardbound_token'] = (resp['access_token'], '')
+    print("Session created")
 
     player_id = resp['user_id']
     session = get_db()
     session.execute("UPDATE Players SET visibility_restricted = TRUE WHERE player_id = :player_id", {"player_id": player_id})
+    session.commit()
 
-    flask.flash('You have been removed from the site.', 'info')
-    revoke_resp = shardbound.get('oauth/revoke')
+    flask.flash('You ({}) have been removed from the site.'.format(player_id), 'info')
+
+    try:
+        # Flask-OAuthlib won't let you send no-data POSTs
+        print(shardbound.request(url='user/show/boreeas#3384').data)
+        revoke_resp = shardbound.request(url='oauth/revoke', method='POST', data={'_': '_'})
+    except OAuthException as ex:
+        print(ex)
+        print(ex.data)
+        raise ex
+
     if revoke_resp.status != 200:
-        print("Something went wrong while revoking the access token", revoke_resp)
+        print("Something went wrong while revoking the access token")
+        print(vars(revoke_resp))
 
     return flask.redirect('/')
 
