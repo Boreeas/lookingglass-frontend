@@ -15,9 +15,19 @@
         <div id="title">{% block header %}{% endblock %}</div>
     </div>
     {% block after_header %} {% endblock %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message|e }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
     <div id="content">{% block content %}{% endblock %}</div>
     <div id="footer">
-        <div id="attribution">Logo by <a href="https://www.artstation.com/artist/happyrock">Nicholas Kole</a> &#9679; Background by <a href="http://www.epicloot.net/">Brandon Liao</a></div>
+        <div id="attribution">Logo by <a href="https://www.artstation.com/artist/happyrock">Nicholas Kole</a> &#9679;
+            Background by <a href="http://www.epicloot.net/">Brandon Liao</a></div>
     </div>
 {% endblock %}
 </body>
